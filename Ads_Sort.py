@@ -1,7 +1,7 @@
 import pandas as pd
 
-df = pd.read_csv(r"C:\Users\main\Documents\data2.csv")
-
+df = pd.read_csv(r"C:\Users\main\Documents\data.csv")
+person_name = df['PERSON_NAME']
 gender = df['GENDER']
 age = df['AGE']
 recent_genre = df['RECENT_POST_TYPE']
@@ -25,11 +25,50 @@ def numlist_vs_num(numlow, numhigh, user_num):
             valid.append(i+1)
 
     return valid
-def Calculate_Valid (Data_List1, Data_List2, Data_List3, Data_List4, Data_List5):
-    Comine_List = Data_List1 + Data_List2 + Data_List3 + Data_List4 + Data_List5
-    Final_Vlid_List = set(Comine_List)
+def combined_list (Data_List1, Data_List2, Data_List3, Data_List4, Data_List5):
+    Combine_List = Data_List1 + Data_List2 + Data_List3 + Data_List4 + Data_List5
+    Final_Vlid_List = set(Combine_List)
     return Final_Vlid_List
 
+def not_combined_list (Data_List1, Data_List2, Data_List3, Data_List4, Data_List5,combine_post_type):
+    tot_data = 0
+    if len(Data_List1) > 0:
+        tot_data = tot_data+1
+    tot_data
+    if len(Data_List2) > 0:
+        tot_data = tot_data+1
+    tot_data
+    if len(Data_List3) > 0:
+        tot_data = tot_data+1
+    tot_data
+    if len(Data_List4) > 0:
+        tot_data = tot_data+1
+    tot_data
+    if len(Data_List5) > 0:
+        tot_data = tot_data+1
+    if combine_post_type == "YES":
+
+        x = []
+        if len(Data_List3) or len(Data_List4) == 0:
+            tot_data = tot_data-1
+
+        post_type_list_combine = Data_List3 + Data_List4
+        post_type_list_combine = set(post_type_list_combine)
+        post_type_list_combine = list(post_type_list_combine)
+        Combine_List = Data_List1 + Data_List2 + post_type_list_combine + Data_List5
+        for i in range(max(Combine_List)):
+            if Combine_List.count(i) > tot_data-1:
+                x.append(i)
+        Final_Vlid_List = x
+        return Final_Vlid_List
+    else:
+        x = []
+        Combine_List = Data_List1 + Data_List2 + Data_List3 + Data_List4 + Data_List5
+        for i in range(max(Combine_List)):
+            if Combine_List.count(i) > tot_data-1:
+                x.append(i)
+        Final_Vlid_List = x
+        return Final_Vlid_List
 
 
 
@@ -38,12 +77,47 @@ Gender_Valid = []
 Recent_Post_Valid = []
 Most_Post_Valid = []
 Friends_Valid = []
+min_age = input("Enter minimum age for the ads, if not applicable, put'na': ")
+try:
+    min_age = int(min_age)
+except ValueError:
+    min_age = -1
+max_age = input("Enter maximum age for the ads, if not applicable, put'na': ")
+try:
+    max_age = int(max_age)
+except ValueError:
+    max_age = -1
+Gender_input = input("Enter gender preference for the ads, if not applicable, put'na': ")
+Gender_input = Gender_input.upper()
+Recent_post = input("Enter user's recent post for the ads, if not applicable, put'na': ")
+Recent_post = Recent_post.upper()
+Most_Post = input("Enter user's most post for the ads, if not applicable, put'na': ")
+Most_Post = Most_Post.upper()
+print("Is the ad fine with having the user have")
+print(Most_Post)
+print("on either their recent or most post? Please enter yes or no: ")
+combine_post_type = input()
+combine_post_type = combine_post_type.upper()
+min_friends = input("Enter user's minimum friends for the ads, if not applicable, put'na': ")
+try:
+    min_friends = int(min_friends)
+except ValueError:
+    min_friends = -1
+max_friends = input("Enter user's maximum friends for the ads, if not applicable, put'na': ")
+try:
+    max_friends = int(max_friends)
+except ValueError:
+    max_friends = -1
+print("Would you like to return users who have:")
+print("1. With at least one of the above input")
+print("2. All the items that were inputted")
+combine_or_not = input("Please enter 1 or 2: ")
 
-ad = [ 15, 30, "Not_Applicable", "Not_Applicable", "Not_Applicable", 50, 400]
-post = False
+ad = [ min_age, max_age, Gender_input , Recent_post , Most_Post , min_friends, max_friends]
+
 for i in range(6):
 
-    if ad[i] == "Any":
+    if ad[i] == "ANY":
         All_Valid = []
         for i in range (len(df)):
             All_Valid.append(i+1)
@@ -63,7 +137,7 @@ if ad[2] == "MALE":
 if ad[2] == "FEMALE":
 
     for i in range (len(df)):
-        if gender[i] == "MALE":
+        if gender[i] == "FEMALE":
             Gender_Valid.append(i+1)
 
 
@@ -134,6 +208,11 @@ if ad[4] == "NEWS":
 if isinstance(ad[5],int):
     Friends_Valid = numlist_vs_num(ad[5], ad[6], friends)
 
-
-Final_Valid = Calculate_Valid(Age_Valid, Gender_Valid, Recent_Post_Valid, Most_Post_Valid, Friends_Valid)
-print(Final_Valid)
+if combine_or_not == "1":
+    Final_Valid = combined_list(Age_Valid, Gender_Valid, Recent_Post_Valid, Most_Post_Valid, Friends_Valid)
+elif combine_or_not == "2":
+    Final_Valid = not_combined_list(Age_Valid, Gender_Valid, Recent_Post_Valid, Most_Post_Valid, Friends_Valid,combine_post_type)
+print("valid users:")
+for i in range(len(df)+1):
+    if i in Final_Valid:
+        print(i,person_name[i-1])
